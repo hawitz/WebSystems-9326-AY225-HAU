@@ -114,7 +114,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize page-specific functionality
     const currentPage = window.location.pathname.split('/').pop();
     switch(currentPage) {
-        case 'index.html':
+        case 'home.html':
         case '':
             initHomePage();
             break;
