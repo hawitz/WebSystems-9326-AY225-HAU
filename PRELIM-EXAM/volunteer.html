@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Volunteer & Donate - Philippine Red Cross</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header & Navigation -->
+    <header>
+        <div class="container header-container">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-cross"></i>
+                </div>
+                <div class="logo-text">Philippine<span>RedCross</span></div>
+            </div>
+            
+            <div class="mobile-menu-btn" id="mobileMenuBtn">
+                <i class="fas fa-bars"></i>
+            </div>
+            
+            <nav id="mainNav">
+                <ul>
+                    <li><a href="home.html">Home</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="programs.html">Programs</a></li>
+                    <li><a href="events.html">Events</a></li>
+                    <li><a href="volunteer.html" class="active">Volunteer</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <h1>Volunteer & Donate</h1>
+            <p>Join our humanitarian movement or support our work through donations</p>
+        </div>
+    </section>
+
+    <!-- Volunteer Registration -->
+    <section class="page-content" id="register">
+        <div class="container">
+            <div class="volunteer-intro">
+                <div class="intro-text">
+                    <h2>Become a Red Cross Volunteer</h2>
+                    <p>Our volunteers are the heart of our humanitarian work. With over 500,000 volunteers nationwide, we're able to reach communities in need across the Philippines.</p>
+                    <p>As a volunteer, you can contribute your time and skills in various areas: disaster response, blood services, health programs, safety training, youth activities, and administrative support.</p>
+                    <div class="volunteer-stats">
+                        <div class="volunteer-stat">
+                            <div class="stat-number">500K+</div>
+                            <div class="stat-label">Active Volunteers</div>
+                        </div>
+                        <div class="volunteer-stat">
+                            <div class="stat-number">5M+</div>
+                            <div class="stat-label">Volunteer Hours Annually</div>
+                        </div>
+                        <div class="volunteer-stat">
+                            <div class="stat-number">81</div>
+                            <div class="stat-label">Provinces Covered</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="intro-image">
+                    <div class="image-placeholder">
+                        <i class="fas fa-hands-helping"></i>
+                        <p>Volunteers in Action</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Volunteer Opportunities -->
+            <div class="volunteer-opportunities">
+                <div class="section-header">
+                    <h2>Volunteer Opportunities</h2>
+                    <p>Find the role that matches your skills and interests</p>
+                </div>
+                
+                <div class="opportunities-container">
+                    <div class="opportunity-card" id="disaster-volunteer">
+                        <div class="opportunity-icon">
+                            <i class="fas fa-hands-helping"></i>
+                        </div>
+                        <h3>Disaster Response Volunteer</h3>
+                        <p>Join our emergency response teams during disasters. Training provided in first aid, search and rescue, and relief distribution.</p>
+                        <ul>
+                            <li>Minimum commitment: 20 hours/month</li>
+                            <li>Training: 40-hour basic disaster course</li>
+                            <li>Physical requirement: Moderate</li>
+                        </ul>
+                        <a href="#volunteerForm" class="btn" onclick="setVolunteerType('Disaster Response')">Apply Now</a>
+                    </div>
+                    
+                    <div class="opportunity-card" id="health-volunteer">
+                        <div class="opportunity-icon">
+                            <i class="fas fa-heartbeat"></i>
+                        </div>
+                        <h3>Health Services Volunteer</h3>
+                        <p>Support our health programs: blood donation drives, community clinics, health education, and immunization campaigns.</p>
+                        <ul>
+                            <li>Medical background preferred but not required</li>
+                            <li>Training: Basic health orientation</li>
+                            <li>Flexible schedule available</li>
+                        </ul>
+                        <a href="#volunteerForm" class="btn" onclick="setVolunteerType('Health Services')">Apply Now</a>
+                    </div>
+                    
+                    <div class="opportunity-card" id="blood-volunteer">
+                        <div class="opportunity-icon">
+                            <i class="fas fa-tint"></i>
+                        </div>
+                        <h3>Blood Services Volunteer</h3>
+                        <p>Assist at blood donation centers and mobile blood drives. Roles include donor screening, post-donation care, and blood drive organization.</p>
+                        <ul>
+                            <li>Minimum commitment: 12 hours/month</li>
+                            <li>Training: Blood services orientation</li>
+                            <li>Ideal for students and professionals</li>
+                        </ul>
+                        <a href="#volunteerForm" class="btn" onclick="setVolunteerType('Blood Services')">Apply Now</a>
+                    </div>
+                    
+                    <div class="opportunity-card">
+                        <div class="opportunity-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h3>Youth Volunteer</h3>
+                        <p>Join our Red Cross Youth program. Open to students aged 13-25. Develop leadership skills through humanitarian activities.</p>
+                        <ul>
+                            <li>For students aged 13-25</li>
+                            <li>School-based or community chapters</li>
+                            <li>Leadership training provided</li>
+                        </ul>
+                        <a href="#volunteerForm" class="btn" onclick="setVolunteerType('Youth Volunteer')">Apply Now</a>
+                    </div>
+                    
+                    <div class="opportunity-card">
+                        <div class="opportunity-icon">
+                            <i class="fas fa-chalkboard-teacher"></i>
+                        </div>
+                        <h3>Training Instructor</h3>
+                        <p>Become a certified instructor for first aid, water safety, or disaster preparedness courses. Share life-saving skills with your community.</p>
+                        <ul>
+                            <li>Requires prior certification</li>
+                            <li>Training: Instructor course</li>
+                            <li>Flexible teaching schedule</li>
+                        </ul>
+                        <a href="#volunteerForm" class="btn" onclick="setVolunteerType('Training Instructor')">Apply Now</a>
+                    </div>
+                    
+                    <div class="opportunity-card">
+                        <div class="opportunity-icon">
+                            <i class="fas fa-laptop-code"></i>
+                        </div>
+                        <h3>Administrative Support</h3>
+                        <p>Contribute your office skills: data entry, social media management, event coordination, or general office support at our chapters.</p>
+                        <ul>
+                            <li>Office hours (9AM-5PM)</li>
+                            <li>Remote options available</li>
+                            <li>Various skill sets needed</li>
+                        </ul>
+                        <a href="#volunteerForm" class="btn" onclick="setVolunteerType('Administrative Support')">Apply Now</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Volunteer Registration Form -->
+            <div class="volunteer-form-section" id="volunteerForm">
+                <div class="section-header">
+                    <h2>Volunteer Registration Form</h2>
+                    <p>Fill out this form to start your volunteer journey with us</p>
+                </div>
+                
+                <form class="volunteer-form" id="volunteerRegistrationForm" onsubmit="return validateVolunteerForm()">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="volunteerType">Volunteer Type *</label>
+                            <select id="volunteerType" name="volunteerType" class="form-control" required>
+                                <option value="">Select volunteer type</option>
+                                <option value="Disaster Response">Disaster Response Volunteer</option>
+                                <option value="Health Services">Health Services Volunteer</option>
+                                <option value="Blood Services">Blood Services Volunteer</option>
+                                <option value="Youth Volunteer">Youth Volunteer</option>
+                                <option value="Training Instructor">Training Instructor</option>
+                                <option value="Administrative Support">Administrative Support</option>
+                                <option value="Other">Other (specify in comments)</option>
+                            </select>
+                            <div class="error-message" id="volunteerTypeError"></div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="preferredChapter">Preferred Chapter *</label>
+                            <select id="preferredChapter" name="preferredChapter" class="form-control" required>
+                                <option value="">Select chapter</option>
+                                <option value="National Headquarters">National Headquarters (Mandaluyong)</option>
+                                <option value="Metro Manila">Metro Manila Chapter</option>
+                                <option value="Cebu">Cebu Chapter</option>
+                                <option value="Davao">Davao Chapter</option>
+                                <option value="Ilocos Norte">Ilocos Norte Chapter</option>
+                                <option value="Iloilo">Iloilo Chapter</option>
+                                <option value="Bicol">Bicol Chapter</option>
+                                <option value="Other">Other (specify in comments)</option>
+                            </select>
+                            <div class="error-message" id="chapterError"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="firstName">First Name *</label>
+                            <input type="text" id="firstName" name="firstName" class="form-control" required>
+                            <div class="error-message" id="firstNameError"></div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="lastName">Last Name *</label>
+                            <input type="text" id="lastName" name="lastName" class="form-control" required>
+                            <div class="error-message" id="lastNameError"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="email">Email Address *</label>
+                            <input type="email" id="email" name="email" class="form-control" required>
+                            <div class="error-message" id="emailError"></div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="phone">Phone Number *</label>
+                            <input type="tel" id="phone" name="phone" class="form-control" required>
+                            <div class="error-message" id="phoneError"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="birthdate">Birthdate *</label>
+                            <input type="date" id="birthdate" name="birthdate" class="form-control" required>
+                            <div class="error-message" id="birthdateError"></div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="availability">Weekly Availability (hours) *</label>
+                            <select id="availability" name="availability" class="form-control" required>
+                                <option value="">Select availability</option>
+                                <option value="1-5">1-5 hours per week</option>
+                                <option value="6-10">6-10 hours per week</option>
+                                <option value="11-20">11-20 hours per week</option>
+                                <option value="20+">More than 20 hours per week</option>
+                            </select>
+                            <div class="error-message" id="availabilityError"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="skills">Skills & Experience</label>
+                        <textarea id="skills" name="skills" class="form-control" rows="3" placeholder="Tell us about your relevant skills, experience, or certifications"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="motivation">Why do you want to volunteer with Philippine Red Cross? *</label>
+                        <textarea id="motivation" name="motivation" class="form-control" rows="3" required placeholder="Share your motivation for joining us"></textarea>
+                        <div class="error-message" id="motivationError"></div>
+                    </div>
+                    
+                    <div class="form-group checkbox-group">
+                        <input type="checkbox" id="agreeTerms" name="agreeTerms" required>
+                        <label for="agreeTerms">I agree to the <a href="#">Terms and Conditions</a> and understand that this is a voluntary, unpaid position. *</label>
+                        <div class="error-message" id="termsError"></div>
+                    </div>
+                    
+                    <button type="submit" class="btn" style="width: 100%; padding: 15px;">Submit Volunteer Application</button>
+                    
+                    <div class="form-success" id="formSuccess">
+                        <i class="fas fa-check-circle"></i>
+                        <strong>Thank you for your application!</strong> We will contact you within 3-5 business days regarding the next steps. Welcome to the Philippine Red Cross volunteer community!
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Donation Section -->
+    <section class="donation-section" id="donate">
+        <div class="container">
+            <div class="section-header">
+                <h2>Support Our Work Through Donations</h2>
+                <p>Your contribution helps us provide life-saving humanitarian assistance</p>
+            </div>
+            
+            <div class="donation-options">
+                <div class="donation-card">
+                    <div class="donation-icon">
+                        <i class="fas fa-hand-holding-heart"></i>
+                    </div>
+                    <h3>One-Time Donation</h3>
+                    <p>Make a single donation to support our ongoing humanitarian work.</p>
+                    <div class="donation-amounts">
+                        <button class="amount-btn" data-amount="500">₱500</button>
+                        <button class="amount-btn" data-amount="1000">₱1,000</button>
+                        <button class="amount-btn" data-amount="2000">₱2,000</button>
+                        <button class="amount-btn" data-amount="5000">₱5,000</button>
+                    </div>
+                    <div class="custom-amount">
+                        <input type="number" id="customAmount" placeholder="Other amount">
+                        <button class="btn" onclick="processDonation('custom')">Donate</button>
+                    </div>
+                </div>
+                
+                <div class="donation-card">
+                    <div class="donation-icon">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <h3>Monthly Sustainer</h3>
+                    <p>Become a monthly donor and provide consistent support for our programs.</p>
+                    <div class="donation-amounts">
+                        <button class="amount-btn" data-amount="300">₱300/month</button>
+                        <button class="amount-btn" data-amount="500">₱500/month</button>
+                        <button class="amount-btn" data-amount="1000">₱1,000/month</button>
+                        <button class="amount-btn" data-amount="2000">₱2,000/month</button>
+                    </div>
+                    <button class="btn" style="width: 100%; margin-top: 20px;" onclick="processDonation('monthly')">Become a Monthly Donor</button>
+                </div>
+                
+                <div class="donation-card" id="donate-blood">
+                    <div class="donation-icon">
+                        <i class="fas fa-tint"></i>
+                    </div>
+                    <h3>Blood Donation</h3>
+                    <p>Donate blood and save up to 3 lives with each donation.</p>
+                    <ul>
+                        <li>Walk-in donors welcome at all PRC blood centers</li>
+                        <li>Donation takes 30-45 minutes</li>
+                        <li>Free health screening included</li>
+                        <li>You can donate every 3 months</li>
+                    </ul>
+                    <a href="events.html#blood-drive" class="btn" style="width: 100%; margin-top: 20px;">Find Blood Drive Near You</a>
+                </div>
+            </div>
+            
+            <div class="donation-impact">
+                <h3>Your Donation Makes an Impact</h3>
+                <div class="impact-examples">
+                    <div class="impact-item">
+                        <div class="impact-amount">₱500</div>
+                        <div class="impact-description">Provides a hygiene kit for a family affected by disaster</div>
+                    </div>
+                    <div class="impact-item">
+                        <div class="impact-amount">₱1,000</div>
+                        <div class="impact-description">Supports emergency medical services for 5 patients</div>
+                    </div>
+                    <div class="impact-item">
+                        <div class="impact-amount">₱5,000</div>
+                        <div class="impact-description">Provides food packs for 10 families for one week</div>
+                    </div>
+                    <div class="impact-item">
+                        <div class="impact-amount">₱10,000</div>
+                        <div class="impact-description">Funds disaster preparedness training for a community</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Corporate Partnership -->
+            <div class="corporate-partnership">
+                <h3>Corporate Partnerships</h3>
+                <p>Is your company interested in partnering with Philippine Red Cross? We offer various corporate engagement opportunities:</p>
+                <div class="partnership-options">
+                    <div class="partnership-option">
+                        <h4>Employee Volunteering</h4>
+                        <p>Organize team-building through humanitarian activities</p>
+                    </div>
+                    <div class="partnership-option">
+                        <h4>CSR Programs</h4>
+                        <p>Align your corporate social responsibility with our humanitarian work</p>
+                    </div>
+                    <div class="partnership-option">
+                        <h4>Cause-Related Marketing</h4>
+                        <p>Partner with us for campaigns that benefit both your brand and our mission</p>
+                    </div>
+                    <div class="partnership-option">
+                        <h4>In-Kind Donations</h4>
+                        <p>Donate goods or services that support our operations</p>
+                    </div>
+                </div>
+                <a href="contact.html#corporate" class="btn">Inquire About Corporate Partnership</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-container">
+                <div class="footer-column">
+                    <h3>Philippine Red Cross</h3>
+                    <p>Providing life-saving humanitarian assistance since 1947. We are committed to protecting life and dignity, especially of the most vulnerable.</p>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="home.html">Home</a></li>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="programs.html">Programs & Services</a></li>
+                        <li><a href="events.html">Events & Campaigns</a></li>
+                        <li><a href="volunteer.html">Volunteer & Donate</a></li>
+                        <li><a href="contact.html">Contact Us</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Contact Info</h3>
+                    <ul>
+                        <li><i class="fas fa-map-marker-alt"></i> 37 EDSA, Mandaluyong City, Philippines</li>
+                        <li><i class="fas fa-phone"></i> (02) 8790-2300</li>
+                        <li><i class="fas fa-envelope"></i> info@redcross.org.ph</li>
+                        <li><i class="fas fa-clock"></i> 24/7 Emergency Hotline: 143</li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Newsletter</h3>
+                    <p>Subscribe to our newsletter for updates on our work and how you can help.</p>
+                    <form class="newsletter-form" id="newsletterForm">
+                        <input type="email" placeholder="Your email address" required>
+                        <button type="submit" class="btn">Subscribe</button>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                <p>&copy; 2023 Philippine Red Cross. All rights reserved. | This website is for educational purposes.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

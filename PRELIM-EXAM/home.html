@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Philippine Red Cross - Home</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header & Navigation -->
+    <header>
+        <div class="container header-container">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-cross"></i>
+                </div>
+                <div class="logo-text">Philippine<span>RedCross</span></div>
+            </div>
+            
+            <div class="mobile-menu-btn" id="mobileMenuBtn">
+                <i class="fas fa-bars"></i>
+            </div>
+            
+            <nav id="mainNav">
+                <ul>
+                    <li><a href="home.html" class="active">Home</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="programs.html">Programs</a></li>
+                    <li><a href="events.html">Events</a></li>
+                    <li><a href="volunteer.html">Volunteer</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1>Saving Lives, Building Communities</h1>
+            <p>The Philippine Red Cross provides life-saving humanitarian assistance to the most vulnerable communities across the Philippines. Join us in our mission to alleviate human suffering.</p>
+            <div class="hero-btns">
+                <a href="volunteer.html" class="btn">Become a Volunteer</a>
+                <a href="#campaigns" class="btn btn-secondary">Support Our Campaigns</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Campaign Highlights -->
+    <section class="campaign-highlights" id="campaigns">
+        <div class="container">
+            <div class="section-header">
+                <h2>Active Campaigns</h2>
+                <p>Help us reach our goals for these critical humanitarian initiatives</p>
+            </div>
+            
+            <div class="campaign-container" id="campaignContainer">
+                <!-- Campaign cards will be dynamically loaded here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Preview -->
+    <section class="services-preview">
+        <div class="container">
+            <div class="section-header">
+                <h2>Our Key Services</h2>
+                <p>Comprehensive humanitarian assistance for communities in need</p>
+            </div>
+            
+            <div class="services-container">
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-ambulance"></i>
+                    </div>
+                    <h3>Emergency Medical Services</h3>
+                    <p>24/7 ambulance services and emergency medical response during disasters and critical situations.</p>
+                    <a href="programs.html#services" class="btn" style="margin-top: 15px;">Learn More</a>
+                </div>
+                
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-tint"></i>
+                    </div>
+                    <h3>Blood Donation Program</h3>
+                    <p>Maintaining a safe and adequate blood supply for patients in need across the country.</p>
+                    <a href="programs.html#services" class="btn" style="margin-top: 15px;">Learn More</a>
+                </div>
+                
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-hands-helping"></i>
+                    </div>
+                    <h3>Disaster Response</h3>
+                    <p>Rapid deployment of resources and personnel during natural disasters and emergencies.</p>
+                    <a href="programs.html#services" class="btn" style="margin-top: 15px;">Learn More</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Emergency Alert Banner -->
+    <section class="emergency-alert">
+        <div class="container">
+            <div class="alert-content">
+                <div class="alert-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="alert-text">
+                    <h3>Emergency Alert: Typhoon Response Ongoing</h3>
+                    <p>We're currently responding to communities affected by Typhoon Lannie. <a href="events.html#typhoon-response">Learn how you can help</a>.</p>
+                </div>
+                <div class="alert-btn">
+                    <a href="volunteer.html#donate" class="btn">Donate Now</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Impact Statistics -->
+    <section class="impact-stats">
+        <div class="container">
+            <div class="section-header">
+                <h2>Our Impact in 2023</h2>
+                <p>Together, we're making a difference across the Philippines</p>
+            </div>
+            
+            <div class="stats-container">
+                <div class="stat-card">
+                    <div class="stat-number" id="stat1">0</div>
+                    <div class="stat-label">Lives Saved</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="stat2">0</div>
+                    <div class="stat-label">Volunteers Active</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="stat3">0</div>
+                    <div class="stat-label">Communities Served</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="stat4">0</div>
+                    <div class="stat-label">Blood Units Collected</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modal for Campaign Details -->
+    <div class="modal-overlay" id="campaignModal">
+        <div class="modal">
+            <div class="modal-close" id="modalClose">&times;</div>
+            <h3 id="modalTitle">Campaign Title</h3>
+            <p id="modalDescription">Campaign description will appear here.</p>
+            <div class="campaign-progress">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="modalProgressBar"></div>
+                </div>
+                <div class="progress-info">
+                    <span>Raised: <span id="modalRaised">₱0</span></span>
+                    <span>Goal: <span id="modalGoal">₱0</span></span>
+                </div>
+            </div>
+            <a href="volunteer.html#donate" class="btn" style="margin-top: 20px; width: 100%;">Donate Now</a>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-container">
+                <div class="footer-column">
+                    <h3>Philippine Red Cross</h3>
+                    <p>Providing life-saving humanitarian assistance since 1947. We are committed to protecting life and dignity, especially of the most vulnerable.</p>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="home.html">Home</a></li>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="programs.html">Programs & Services</a></li>
+                        <li><a href="events.html">Events & Campaigns</a></li>
+                        <li><a href="volunteer.html">Volunteer & Donate</a></li>
+                        <li><a href="contact.html">Contact Us</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Contact Info</h3>
+                    <ul>
+                        <li><i class="fas fa-map-marker-alt"></i> 37 EDSA, Mandaluyong City, Philippines</li>
+                        <li><i class="fas fa-phone"></i> (02) 8790-2300</li>
+                        <li><i class="fas fa-envelope"></i> info@redcross.org.ph</li>
+                        <li><i class="fas fa-clock"></i> 24/7 Emergency Hotline: 143</li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Newsletter</h3>
+                    <p>Subscribe to our newsletter for updates on our work and how you can help.</p>
+                    <form class="newsletter-form" id="newsletterForm">
+                        <input type="email" placeholder="Your email address" required>
+                        <button type="submit" class="btn">Subscribe</button>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                <p>&copy; 2023 Philippine Red Cross. All rights reserved. | This website is for educational purposes.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
