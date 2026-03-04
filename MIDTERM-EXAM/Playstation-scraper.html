@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PSN store scraper · any URL · game links</title>
+  <title>PSN scraper · game images + genre badges</title>
 
   <!-- PlayStation fonts: Orbitron (tech) + Open Sans -->
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Open+Sans:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet" />
@@ -35,7 +35,7 @@
     }
 
     .page {
-      max-width: 1300px;
+      max-width: 1400px;
       margin: 0 auto;
       padding: 40px 24px 70px;
     }
@@ -76,7 +76,7 @@
     .subtitle {
       color: var(--ps-text-dim);
       margin-top: 16px;
-      max-width: 600px;
+      max-width: 700px;
       border-bottom: 1px solid var(--ps-border);
       padding-bottom: 18px;
     }
@@ -338,14 +338,33 @@
     @keyframes fadeRow { from { opacity:0; transform: translateX(6px); } to { opacity:1; transform:none; } }
 
     td {
-      padding: 14px 20px;
+      padding: 14px 12px;
       vertical-align: middle;
     }
 
     td.num-col {
       color: var(--ps-text-dim);
       font-family: 'Orbitron', sans-serif;
-      width: 50px;
+      width: 40px;
+      text-align: center;
+    }
+
+    /* Image column */
+    .image-col {
+      width: 70px;
+    }
+    .game-thumb {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 12px;
+      border: 2px solid var(--ps-border);
+      background: #2a2a33;
+      transition: transform 0.15s;
+    }
+    .game-thumb:hover {
+      transform: scale(1.05);
+      border-color: var(--ps-accent);
     }
 
     td.title-col a {
@@ -372,7 +391,29 @@
       opacity: 1;
     }
 
-    td.genre-col { color: #b4b4c8; }
+    /* Genre badges - each genre gets a distinct color */
+    .genre-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 40px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      background: #2e3a4a;
+      border: 1px solid transparent;
+    }
+    .genre-badge.action { background: #c44536; color: white; }
+    .genre-badge.rpg { background: #6b4e71; color: white; }
+    .genre-badge.adventure { background: #2a6f6f; color: white; }
+    .genre-badge.shooter { background: #b9772e; color: white; }
+    .genre-badge.racing { background: #b4436c; color: white; }
+    .genre-badge.sports { background: #3f8f6b; color: white; }
+    .genre-badge.fighting { background: #a33e3e; color: white; }
+    .genre-badge.horror { background: #4a4a6a; color: white; }
+    .genre-badge.puzzle { background: #8a6d3b; color: white; }
+    .genre-badge.openworld { background: #4f7e7e; color: white; }
+
     td.price-col {
       font-family: 'Orbitron', sans-serif;
       color: #b0f7b0;
@@ -425,18 +466,18 @@
 <div class="page">
 
   <header>
-    <div class="eyebrow">playstation network // universal scraper</div>
-    <h1>PS5™ & PS4™ <span>catalog</span></h1>
+    <div class="eyebrow">playstation network // with images & genre badges</div>
+    <h1>PS5™ & PS4™ <span>visual catalog</span></h1>
     <p class="subtitle">
-      <strong>any URL, transformed into games</strong> — paste any product page, and we'll attempt to extract items
-      (using common HTML patterns) and convert them into PlayStation titles with official store links.
+      <strong>every game now shows a cover image + genre badge</strong> — images are dynamically generated from 
+      placeholder sources. Badges clearly indicate if it's Action, RPG, Shooter, Puzzle, etc.
     </p>
   </header>
 
   <div class="note">
     <span class="ps-logo-badge">PS</span>
-    <span><strong>no domain restrictions</strong> — you can now enter any website. The scraper looks for common product patterns 
-    (headings, links, prices) and turns them into games. Best results with sites that have clear item listings.</span>
+    <span><strong>new:</strong> game images (via placeholder picsum) and colour‑coded genre badges. 
+    Hover over any image to zoom. Filter by genre, platform, or price.</span>
   </div>
 
   <!-- controls -->
@@ -471,6 +512,19 @@
   <!-- filter bar -->
   <div id="filter-bar">
     <input type="text" id="search-input" placeholder="filter by game name …" oninput="renderTable()" />
+    <select id="genre-filter" onchange="renderTable()">
+      <option value="">all genres</option>
+      <option value="Action">Action</option>
+      <option value="RPG">RPG</option>
+      <option value="Adventure">Adventure</option>
+      <option value="Shooter">Shooter</option>
+      <option value="Racing">Racing</option>
+      <option value="Sports">Sports</option>
+      <option value="Fighting">Fighting</option>
+      <option value="Horror">Horror</option>
+      <option value="Puzzle">Puzzle</option>
+      <option value="Open World">Open World</option>
+    </select>
     <select id="platform-filter" onchange="renderTable()">
       <option value="">all platforms</option>
       <option value="PS5">PS5</option>
@@ -495,6 +549,7 @@
       <thead>
         <tr>
           <th>#</th>
+          <th>cover</th>
           <th onclick="sortBy('title')" id="th-title">game title <span class="sort-icon"></span></th>
           <th onclick="sortBy('genre')" id="th-genre">genre <span class="sort-icon"></span></th>
           <th onclick="sortBy('price')" id="th-price">price <span class="sort-icon"></span></th>
@@ -519,7 +574,7 @@
     let sortKey = 'title';
     let sortDir = 'asc';
 
-    // ---- REAL PlayStation game titles (extensive list) ----
+    // ---- REAL PlayStation game titles ----
     const PS_TITLES = [
       "Marathon", "Returnal", "God of War Ragnarök", "Horizon Forbidden West", "Gran Turismo 7",
       "The Last of Us Part II", "Ghost of Tsushima", "Spider-Man 2", "Ratchet & Clank: Rift Apart",
@@ -552,7 +607,7 @@
       { name: 'codetabs.com', buildUrl: t=>`https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(t)}`, extract: async r=>r.text() }
     ];
 
-    // Helper: convert game title to PlayStation Store URL (official format)
+    // Helper: convert game title to PlayStation Store URL
     function titleToStoreUrl(title) {
       const slug = title
         .toLowerCase()
@@ -562,9 +617,15 @@
       return `https://www.playstation.com/en-us/games/${slug}/`;
     }
 
-    // Universal extractor: tries to find any product-like items in the page
+    // Generate a consistent image URL for a game (using picsum + seed based on title)
+    function getGameImageUrl(title, idx) {
+      const seed = title.split('').reduce((a,b)=>a+b.charCodeAt(0), 0) + idx * 10;
+      // Use picsum with id between 1 and 300, add random seed to vary
+      return `https://picsum.photos/id/${(seed % 300) + 10}/80/80?grayscale&seed=${seed}`;
+    }
+
+    // Universal extractor
     function extractAnyItems(doc, baseUrl) {
-      // try common product containers
       const selectors = [
         'article', '.product', '.item', '.listing', '[class*="product"]',
         'li.product', 'div.card', '.catalog-item', '.search-result'
@@ -579,36 +640,30 @@
         }
       }
       
-      // If still nothing, fallback to all links with titles
       if (candidates.length === 0) {
         candidates = Array.from(doc.querySelectorAll('a[title], h3, h2, h4')).map(el => {
-          // wrap single element to mimic container
-          const fakeContainer = doc.createElement('div');
-          fakeContainer.appendChild(el.cloneNode(true));
-          return fakeContainer;
+          const fake = doc.createElement('div');
+          fake.appendChild(el.cloneNode(true));
+          return fake;
         });
       }
 
       return candidates.map((el, idx) => {
-        // find best title
         let title = '';
         const titleEl = el.querySelector('h3 a, h2 a, h4 a, a[title], .title, .name');
         if (titleEl) {
           title = titleEl.getAttribute('title') || titleEl.textContent?.trim() || '';
         }
         if (!title) {
-          // try any heading or link
           const heading = el.querySelector('h3, h2, h4, a');
           title = heading?.textContent?.trim() || `Item ${idx+1}`;
         }
 
-        // find best link
         let linkEl = el.querySelector('a');
         let href = linkEl?.getAttribute('href') || '';
         let itemUrl = href ? new URL(href, baseUrl).href : baseUrl;
 
-        // find price
-        let price = 29.99; // default
+        let price = 29.99;
         const priceEl = el.querySelector('.price, [class*="price"], .amount, .money');
         if (priceEl) {
           const priceText = priceEl.textContent?.trim() || '';
@@ -616,11 +671,11 @@
           if (!isNaN(parsed) && parsed > 0) price = parsed;
         }
 
-        return { title, price, bookUrl: itemUrl };
+        return { title, price, itemUrl };
       }).filter(item => item.title.length > 0);
     }
 
-    // Transform any item into a PS game
+    // Transform any item into a PS game with image
     function anyItemToPlaystationGame(item, idx) {
       const hash = Array.from(item.title).reduce((acc, ch) => acc + ch.charCodeAt(0), 0) + idx * 7;
       const titleIndex = (hash + idx) % PS_TITLES.length;
@@ -631,20 +686,23 @@
       const genre = GENRES[genreIndex];
       const platform = PLATFORMS[platformIndex];
       const storeUrl = titleToStoreUrl(gameTitle);
+      const imageUrl = getGameImageUrl(gameTitle, idx + hash);
 
       return {
         title: gameTitle,
         genre: genre,
+        genreLower: genre.toLowerCase().replace(/\s+/g, ''),
         price: item.price,
         priceText: `£${item.price.toFixed(2)}`,
         platform: platform,
         rawPrice: item.price,
-        originalUrl: item.bookUrl,
+        originalUrl: item.itemUrl,
         storeUrl: storeUrl,
+        imageUrl: imageUrl,
       };
     }
 
-    // ---------- fetch with fallback ----------
+    // fetch with fallback
     async function fetchWithFallback(targetUrl, onProgress) {
       const errors = [];
       for (const proxy of PROXIES) {
@@ -663,7 +721,7 @@
       throw new Error(`All proxies failed:\n${errors.join('\n')}`);
     }
 
-    // ---------- main scrape ----------
+    // main scrape
     window.scrape = async function() {
       const url = document.getElementById('url-input').value.trim();
       if (!url) return setStatus('error', '⚠️ enter URL');
@@ -673,29 +731,25 @@
 
       try {
         const html = await fetchWithFallback(url, (msg) => setStatus('loading', msg));
-        setStatus('loading', 'parsing & transforming items …');
+        setStatus('loading', 'parsing & generating images …');
 
         const parser = new DOMParser();
         const doc = parser.parseFromString(html, 'text/html');
         
-        // Extract any items from the page (universal)
         const rawItems = extractAnyItems(doc, url);
 
         if (rawItems.length === 0) {
-          // fallback: create some dummy items based on page text
           const text = doc.body?.textContent || '';
           const words = text.split(/\s+/).filter(w => w.length > 5).slice(0, 10);
           for (let i = 0; i < Math.min(words.length, 8); i++) {
-            rawItems.push({ title: words[i], price: 19.99 + i, bookUrl: url });
+            rawItems.push({ title: words[i], price: 19.99 + i, itemUrl: url });
           }
         }
 
         if (rawItems.length === 0) throw new Error('no items could be extracted');
 
-        // transform to PS games
         allGames = rawItems.map((item, idx) => anyItemToPlaystationGame(item, idx));
 
-        // update stats
         const prices = allGames.map(g => g.rawPrice);
         const minP = Math.min(...prices).toFixed(2);
         const maxP = Math.max(...prices).toFixed(2);
@@ -712,8 +766,8 @@
         document.getElementById('filter-bar').classList.add('visible');
         document.getElementById('export-bar').classList.add('visible');
 
-        // reset filters
         document.getElementById('search-input').value = '';
+        document.getElementById('genre-filter').value = '';
         document.getElementById('platform-filter').value = '';
         document.getElementById('price-filter').value = '';
 
@@ -721,7 +775,7 @@
         updateSortHeaders();
         renderTable();
 
-        setStatus('done', `✅ ${allGames.length} PlayStation games generated from ${url}`);
+        setStatus('done', `✅ ${allGames.length} games with images & genre badges (from ${url})`);
       } catch (err) {
         setStatus('error', `❌ ${err.message}`);
         console.error(err);
@@ -730,14 +784,16 @@
       }
     };
 
-    // render table
+    // render table with images and genre badges
     window.renderTable = function() {
       const search = document.getElementById('search-input').value.toLowerCase();
+      const genreVal = document.getElementById('genre-filter').value;
       const platformVal = document.getElementById('platform-filter').value;
       const priceRange = document.getElementById('price-filter').value;
 
       let filtered = allGames.filter(g => {
         if (search && !g.title.toLowerCase().includes(search)) return false;
+        if (genreVal && g.genre !== genreVal) return false;
         if (platformVal && g.platform !== platformVal) return false;
         if (priceRange) {
           const p = g.rawPrice;
@@ -748,7 +804,6 @@
         return true;
       });
 
-      // sort
       filtered = [...filtered].sort((a,b) => {
         let av = a[sortKey], bv = b[sortKey];
         if (typeof av === 'string') av = av.toLowerCase();
@@ -776,10 +831,15 @@
       tbody.innerHTML = filtered.map((g, i) => {
         const delay = Math.min(i * 20, 300);
         const badgeClass = g.platform === 'PS5' ? 'platform-badge ps5-badge' : 'platform-badge ps4-badge';
+        // genre badge with dynamic class
+        const genreClass = `genre-badge ${g.genreLower}`;
         return `<tr style="animation-delay:${delay}ms">
           <td class="num-col">${i+1}</td>
+          <td class="image-col">
+            <img src="${g.imageUrl}" alt="${escapeHtml(g.title)} cover" class="game-thumb" loading="lazy">
+          </td>
           <td class="title-col"><a href="${g.storeUrl}" target="_blank" rel="noopener">${escapeHtml(g.title)}</a></td>
-          <td class="genre-col">${escapeHtml(g.genre)}</td>
+          <td><span class="${genreClass}">${escapeHtml(g.genre)}</span></td>
           <td class="price-col">${escapeHtml(g.priceText)}</td>
           <td><span class="${badgeClass}">${g.platform}</span></td>
         </tr>`;
@@ -815,13 +875,14 @@
 
     // exports
     window.exportCSV = function() {
-      const header = ['Title','Genre','Price','Platform','Store URL'];
+      const header = ['Title','Genre','Price','Platform','Store URL','Image URL'];
       const rows = allGames.map(g => [
         `"${g.title.replace(/"/g,'""')}"`,
         `"${g.genre}"`,
         g.priceText,
         g.platform,
-        g.storeUrl
+        g.storeUrl,
+        g.imageUrl
       ].join(','));
       download([header.join(','), ...rows].join('\n'), 'ps_games.csv', 'text/csv');
     };
@@ -832,7 +893,8 @@
         genre: g.genre, 
         price: g.priceText, 
         platform: g.platform, 
-        storeUrl: g.storeUrl 
+        storeUrl: g.storeUrl,
+        imageUrl: g.imageUrl
       }));
       download(JSON.stringify(data, null, 2), 'ps_games.json', 'application/json');
     };
@@ -846,7 +908,7 @@
       URL.revokeObjectURL(a.href);
     }
 
-    // quick page buttons (still set demo URLs)
+    // quick page buttons
     document.querySelectorAll('.pg-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         document.querySelectorAll('.pg-btn').forEach(b => b.classList.remove('active'));
@@ -857,8 +919,8 @@
       });
     });
 
-    // initial load (optional, can start empty)
-    // window.addEventListener('load', () => scrape()); // disabled to avoid immediate scrape
+    // initial load (optional)
+    // window.addEventListener('load', () => scrape());
   })();
 </script>
 </body>
