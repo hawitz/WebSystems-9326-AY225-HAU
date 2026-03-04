@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PSN store scraper · direct game links</title>
+  <title>PSN store scraper · any URL · game links</title>
 
   <!-- PlayStation fonts: Orbitron (tech) + Open Sans -->
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Open+Sans:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet" />
@@ -425,25 +425,25 @@
 <div class="page">
 
   <header>
-    <div class="eyebrow">playstation network // official store links</div>
+    <div class="eyebrow">playstation network // universal scraper</div>
     <h1>PS5™ & PS4™ <span>catalog</span></h1>
     <p class="subtitle">
-      <strong>real game titles with direct PlayStation Store links</strong> — every game name links to its 
-      official PSN page (opens in new tab). Data is scraped from <code>books.toscrape.com</code> and transformed.
+      <strong>any URL, transformed into games</strong> — paste any product page, and we'll attempt to extract items
+      (using common HTML patterns) and convert them into PlayStation titles with official store links.
     </p>
   </header>
 
   <div class="note">
     <span class="ps-logo-badge">PS</span>
-    <span><strong>live proxy fallback:</strong> <code>corsproxy.io</code> • <code>allorigins.win</code> • <code>codetabs.com</code>.<br> 
-    Each game title now links to the real PlayStation Store page for that title (e.g., <strong>playstation.com/en-us/games/god-of-war-ragnarok</strong>).</span>
+    <span><strong>no domain restrictions</strong> — you can now enter any website. The scraper looks for common product patterns 
+    (headings, links, prices) and turns them into games. Best results with sites that have clear item listings.</span>
   </div>
 
   <!-- controls -->
   <div class="controls">
     <div class="field">
-      <label>📀 source page (books.toscrape.com)</label>
-      <input type="url" id="url-input" value="https://books.toscrape.com/catalogue/page-1.html" />
+      <label>📀 any URL (product listing page)</label>
+      <input type="url" id="url-input" value="https://books.toscrape.com/catalogue/page-1.html" placeholder="https://example.com/products" />
     </div>
     <div class="page-btns">
       <button class="pg-btn active" data-page="1">1</button>
@@ -451,6 +451,7 @@
       <button class="pg-btn" data-page="3">3</button>
       <button class="pg-btn" data-page="4">4</button>
       <button class="pg-btn" data-page="5">5</button>
+      <span style="color:var(--ps-text-dim); font-size:0.8rem; align-self:center;">(demo pages)</span>
     </div>
     <button class="btn-scrape" id="scrape-btn" onclick="scrape()">🎮 SCRAPE GAMES</button>
   </div>
@@ -488,7 +489,7 @@
   <div class="table-wrap">
     <div id="empty-state" class="empty-state">
       <span class="icon">📀</span>
-      <p>click SCRAPE GAMES to load PlayStation titles</p>
+      <p>enter a URL and click SCRAPE GAMES</p>
     </div>
     <table id="games-table" style="display:none;">
       <thead>
@@ -518,7 +519,7 @@
     let sortKey = 'title';
     let sortDir = 'asc';
 
-    // ---- REAL PlayStation game titles (extensive list, no book leftovers) ----
+    // ---- REAL PlayStation game titles (extensive list) ----
     const PS_TITLES = [
       "Marathon", "Returnal", "God of War Ragnarök", "Horizon Forbidden West", "Gran Turismo 7",
       "The Last of Us Part II", "Ghost of Tsushima", "Spider-Man 2", "Ratchet & Clank: Rift Apart",
@@ -553,21 +554,75 @@
 
     // Helper: convert game title to PlayStation Store URL (official format)
     function titleToStoreUrl(title) {
-      // Convert "God of War Ragnarök" → "god-of-war-ragnarok"
       const slug = title
         .toLowerCase()
-        .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // remove accents
-        .replace(/[^a-z0-9]+/g, '-')                       // replace non-alphanumeric with hyphens
-        .replace(/^-|-$/g, '');                             // trim hyphens
-      
-      // Use US store as default, but could be changed
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-|-$/g, '');
       return `https://www.playstation.com/en-us/games/${slug}/`;
     }
 
-    // helper: generate a consistent but unique game per book (no book titles visible)
-    function bookToPlaystationGame(book, idx) {
-      // use a hash of the original title to pick from PS_TITLES array (so same book -> same game)
-      const hash = Array.from(book.title).reduce((acc, ch) => acc + ch.charCodeAt(0), 0) + idx * 7;
+    // Universal extractor: tries to find any product-like items in the page
+    function extractAnyItems(doc, baseUrl) {
+      // try common product containers
+      const selectors = [
+        'article', '.product', '.item', '.listing', '[class*="product"]',
+        'li.product', 'div.card', '.catalog-item', '.search-result'
+      ];
+      
+      let candidates = [];
+      for (const sel of selectors) {
+        const found = doc.querySelectorAll(sel);
+        if (found.length > 0) {
+          candidates = Array.from(found);
+          break;
+        }
+      }
+      
+      // If still nothing, fallback to all links with titles
+      if (candidates.length === 0) {
+        candidates = Array.from(doc.querySelectorAll('a[title], h3, h2, h4')).map(el => {
+          // wrap single element to mimic container
+          const fakeContainer = doc.createElement('div');
+          fakeContainer.appendChild(el.cloneNode(true));
+          return fakeContainer;
+        });
+      }
+
+      return candidates.map((el, idx) => {
+        // find best title
+        let title = '';
+        const titleEl = el.querySelector('h3 a, h2 a, h4 a, a[title], .title, .name');
+        if (titleEl) {
+          title = titleEl.getAttribute('title') || titleEl.textContent?.trim() || '';
+        }
+        if (!title) {
+          // try any heading or link
+          const heading = el.querySelector('h3, h2, h4, a');
+          title = heading?.textContent?.trim() || `Item ${idx+1}`;
+        }
+
+        // find best link
+        let linkEl = el.querySelector('a');
+        let href = linkEl?.getAttribute('href') || '';
+        let itemUrl = href ? new URL(href, baseUrl).href : baseUrl;
+
+        // find price
+        let price = 29.99; // default
+        const priceEl = el.querySelector('.price, [class*="price"], .amount, .money');
+        if (priceEl) {
+          const priceText = priceEl.textContent?.trim() || '';
+          const parsed = parseFloat(priceText.replace(/[^0-9.]/g, ''));
+          if (!isNaN(parsed) && parsed > 0) price = parsed;
+        }
+
+        return { title, price, bookUrl: itemUrl };
+      }).filter(item => item.title.length > 0);
+    }
+
+    // Transform any item into a PS game
+    function anyItemToPlaystationGame(item, idx) {
+      const hash = Array.from(item.title).reduce((acc, ch) => acc + ch.charCodeAt(0), 0) + idx * 7;
       const titleIndex = (hash + idx) % PS_TITLES.length;
       const genreIndex = (hash + idx * 3) % GENRES.length;
       const platformIndex = (hash + idx * 2) % PLATFORMS.length;
@@ -575,17 +630,17 @@
       const gameTitle = PS_TITLES[titleIndex];
       const genre = GENRES[genreIndex];
       const platform = PLATFORMS[platformIndex];
-      const storeUrl = titleToStoreUrl(gameTitle);  // <-- generate real PlayStation Store link
+      const storeUrl = titleToStoreUrl(gameTitle);
 
       return {
         title: gameTitle,
         genre: genre,
-        price: book.price,
-        priceText: `£${book.price.toFixed(2)}`,
+        price: item.price,
+        priceText: `£${item.price.toFixed(2)}`,
         platform: platform,
-        rawPrice: book.price,
-        bookUrl: book.bookUrl,   // fallback (kept but not used for linking)
-        storeUrl: storeUrl,      // official PlayStation Store link
+        rawPrice: item.price,
+        originalUrl: item.bookUrl,
+        storeUrl: storeUrl,
       };
     }
 
@@ -605,42 +660,40 @@
           errors.push(`${proxy.name}: ${err.message}`);
         }
       }
-      throw new Error(`All proxies dead:\n${errors.join('\n')}`);
+      throw new Error(`All proxies failed:\n${errors.join('\n')}`);
     }
 
     // ---------- main scrape ----------
     window.scrape = async function() {
       const url = document.getElementById('url-input').value.trim();
       if (!url) return setStatus('error', '⚠️ enter URL');
-      if (!url.includes('books.toscrape.com')) 
-        return setStatus('error', '⚠️ only books.toscrape.com allowed');
 
       setStatus('loading', 'connecting …');
       document.getElementById('scrape-btn').disabled = true;
 
       try {
         const html = await fetchWithFallback(url, (msg) => setStatus('loading', msg));
-        setStatus('loading', 'parsing game catalog …');
+        setStatus('loading', 'parsing & transforming items …');
 
         const parser = new DOMParser();
         const doc = parser.parseFromString(html, 'text/html');
-        const articles = doc.querySelectorAll('article.product_pod');
+        
+        // Extract any items from the page (universal)
+        const rawItems = extractAnyItems(doc, url);
 
-        if (articles.length === 0) throw new Error('no products found');
+        if (rawItems.length === 0) {
+          // fallback: create some dummy items based on page text
+          const text = doc.body?.textContent || '';
+          const words = text.split(/\s+/).filter(w => w.length > 5).slice(0, 10);
+          for (let i = 0; i < Math.min(words.length, 8); i++) {
+            rawItems.push({ title: words[i], price: 19.99 + i, bookUrl: url });
+          }
+        }
 
-        // extract raw book data
-        const rawBooks = Array.from(articles).map(article => {
-          const anchor = article.querySelector('h3 a');
-          const title = anchor?.getAttribute('title') || anchor?.textContent?.trim() || 'unknown';
-          const relHref = anchor?.getAttribute('href') || '';
-          const bookUrl = new URL(relHref, url).href;
-          const priceText = article.querySelector('.price_color')?.textContent?.trim() || '£0.00';
-          const price = parseFloat(priceText.replace(/[^0-9.]/g, '')) || 0;
-          return { title, price, bookUrl };
-        });
+        if (rawItems.length === 0) throw new Error('no items could be extracted');
 
-        // transform to real PS games — no book titles survive
-        allGames = rawBooks.map((book, idx) => bookToPlaystationGame(book, idx));
+        // transform to PS games
+        allGames = rawItems.map((item, idx) => anyItemToPlaystationGame(item, idx));
 
         // update stats
         const prices = allGames.map(g => g.rawPrice);
@@ -668,7 +721,7 @@
         updateSortHeaders();
         renderTable();
 
-        setStatus('done', `✅ ${allGames.length} real PlayStation games loaded (page ${url})`);
+        setStatus('done', `✅ ${allGames.length} PlayStation games generated from ${url}`);
       } catch (err) {
         setStatus('error', `❌ ${err.message}`);
         console.error(err);
@@ -723,7 +776,6 @@
       tbody.innerHTML = filtered.map((g, i) => {
         const delay = Math.min(i * 20, 300);
         const badgeClass = g.platform === 'PS5' ? 'platform-badge ps5-badge' : 'platform-badge ps4-badge';
-        // Use storeUrl instead of bookUrl
         return `<tr style="animation-delay:${delay}ms">
           <td class="num-col">${i+1}</td>
           <td class="title-col"><a href="${g.storeUrl}" target="_blank" rel="noopener">${escapeHtml(g.title)}</a></td>
@@ -794,7 +846,7 @@
       URL.revokeObjectURL(a.href);
     }
 
-    // quick page buttons
+    // quick page buttons (still set demo URLs)
     document.querySelectorAll('.pg-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         document.querySelectorAll('.pg-btn').forEach(b => b.classList.remove('active'));
@@ -805,8 +857,8 @@
       });
     });
 
-    // initial load
-    window.addEventListener('load', () => scrape());
+    // initial load (optional, can start empty)
+    // window.addEventListener('load', () => scrape()); // disabled to avoid immediate scrape
   })();
 </script>
 </body>
