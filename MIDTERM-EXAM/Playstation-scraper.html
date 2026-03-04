@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PSN scraper · playstation.com · demo</title>
+
+  <!-- PlayStation inspired fonts: Open Sans (clean) and Orbitron (tech accents) -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Open+Sans:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ─── PlayStation 5 dark palette ───────────────────────────── */
+    :root {
+      --ps-bg:       #0f0f11;        /* deep charcoal */
+      --ps-panel:    #1c1c20;         /* card background */
+      --ps-accent:   #006fcd;         /* PS blue */
+      --ps-accent2:  #f04646;         /* vivid red (PS buttons) */
+      --ps-text:     #e9e9ed;
+      --ps-text-dim: #8e8e9a;
+      --ps-border:   #3a3a44;
+      --ps-glow:     0 0 0 2px rgba(0,111,205,0.3);
+      --ps-shadow:   0 12px 28px rgba(0,0,0,0.8);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Open Sans', sans-serif;
+      background: var(--ps-bg);
+      color: var(--ps-text);
+      min-height: 100vh;
+      background-image: 
+        radial-gradient(circle at 10% 20%, rgba(0,111,205,0.08) 0%, transparent 30%),
+        repeating-linear-gradient(45deg, rgba(255,255,255,0.01) 0px, rgba(255,255,255,0.01) 2px, transparent 2px, transparent 8px);
+    }
+
+    .page {
+      max-width: 1300px;
+      margin: 0 auto;
+      padding: 40px 24px 80px;
+    }
+
+    /* ─── Header – PSN style ───────────────────────────────────── */
+    header {
+      margin-bottom: 40px;
+      border-left: 6px solid var(--ps-accent2);
+      padding-left: 32px;
+    }
+
+    .eyebrow {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.8rem;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--ps-accent2);
+      margin-bottom: 8px;
+    }
+
+    h1 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(2.4rem, 6vw, 4rem);
+      font-weight: 700;
+      text-transform: uppercase;
+      line-height: 1.1;
+      background: linear-gradient(135deg, #fff 0%, #a0c0ff 80%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    h1 span {
+      background: none;
+      -webkit-text-fill-color: var(--ps-text);
+      font-weight: 500;
+    }
+
+    .subtitle {
+      color: var(--ps-text-dim);
+      font-size: 1rem;
+      max-width: 580px;
+      margin-top: 16px;
+      border-bottom: 1px solid var(--ps-border);
+      padding-bottom: 20px;
+    }
+
+    .subtitle strong {
+      color: var(--ps-accent2);
+      font-weight: 600;
+    }
+
+    /* ─── note card ─────────────────────────────────────────────── */
+    .note {
+      background: var(--ps-panel);
+      border: 1px solid var(--ps-border);
+      border-radius: 8px;
+      padding: 18px 24px;
+      margin-bottom: 32px;
+      font-size: 0.9rem;
+      color: var(--ps-text-dim);
+      box-shadow: var(--ps-shadow);
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .note code {
+      background: #2a2a33;
+      color: #ffb87c;
+      padding: 4px 8px;
+      border-radius: 4px;
+    }
+
+    .ps-logo {
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 700;
+      font-size: 1.6rem;
+      background: var(--ps-accent);
+      color: black;
+      padding: 4px 14px;
+      border-radius: 30px;
+    }
+
+    /* ─── Controls – dark panel ─────────────────────────────────── */
+    .controls {
+      background: var(--ps-panel);
+      border: 1px solid var(--ps-border);
+      border-radius: 12px;
+      padding: 28px 32px;
+      box-shadow: var(--ps-shadow);
+      margin-bottom: 36px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      align-items: flex-end;
+    }
+
+    .field {
+      flex: 2 1 400px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    label {
+      font-size: 0.75rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--ps-text-dim);
+      font-family: 'Orbitron', sans-serif;
+    }
+
+    input[type="url"] {
+      background: #2a2a33;
+      border: 1.5px solid var(--ps-border);
+      border-radius: 6px;
+      padding: 12px 16px;
+      font-family: 'Open Sans', sans-serif;
+      font-size: 0.95rem;
+      color: white;
+      outline: none;
+      transition: border 0.2s, box-shadow 0.2s;
+    }
+
+    input[type="url"]:focus {
+      border-color: var(--ps-accent);
+      box-shadow: var(--ps-glow);
+    }
+
+    .page-btns {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: flex-end;
+    }
+
+    .pg-btn {
+      background: #2a2a33;
+      border: 1.5px solid var(--ps-border);
+      color: var(--ps-text);
+      border-radius: 6px;
+      padding: 10px 20px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .pg-btn:hover, .pg-btn.active {
+      background: var(--ps-accent);
+      border-color: var(--ps-accent);
+      color: black;
+      font-weight: 600;
+    }
+
+    .btn-scrape {
+      background: var(--ps-accent2);
+      border: none;
+      border-radius: 40px;
+      padding: 12px 32px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: black;
+      cursor: pointer;
+      transition: filter 0.2s, transform 0.1s;
+      box-shadow: 0 6px 0 #9a1d1d;
+      letter-spacing: 1px;
+      align-self: flex-end;
+    }
+
+    .btn-scrape:hover {
+      filter: brightness(1.2);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 0 #9a1d1d;
+    }
+
+    .btn-scrape:active {
+      transform: translateY(4px);
+      box-shadow: 0 2px 0 #9a1d1d;
+    }
+
+    .btn-scrape:disabled {
+      opacity: 0.5;
+      pointer-events: none;
+      filter: grayscale(1);
+    }
+
+    /* status */
+    #status-bar {
+      display: none;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 24px;
+      border-radius: 40px;
+      margin-bottom: 24px;
+      font-weight: 600;
+      background: var(--ps-panel);
+      border: 1px solid;
+    }
+
+    #status-bar.loading {
+      display: flex;
+      border-color: var(--ps-accent);
+      color: var(--ps-accent);
+    }
+
+    #status-bar.error {
+      display: flex;
+      border-color: var(--ps-accent2);
+      color: #ff7a7a;
+    }
+
+    #status-bar.done {
+      display: flex;
+      border-color: #3acf6f;
+      color: #9bffb1;
+    }
+
+    .spinner {
+      width: 20px; height: 20px;
+      border: 3px solid currentColor;
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* stats cards */
+    #stats-row {
+      display: none;
+      gap: 18px;
+      margin-bottom: 32px;
+      flex-wrap: wrap;
+    }
+    #stats-row.visible { display: flex; }
+
+    .stat-card {
+      flex: 1 1 140px;
+      background: var(--ps-panel);
+      border: 1px solid var(--ps-border);
+      border-radius: 16px;
+      padding: 18px 10px;
+      text-align: center;
+      box-shadow: var(--ps-shadow);
+    }
+
+    .stat-card .num {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--ps-accent);
+      display: block;
+      line-height: 1.2;
+    }
+
+    .stat-card .lbl {
+      font-size: 0.7rem;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: var(--ps-text-dim);
+    }
+
+    /* filter bar */
+    #filter-bar {
+      display: none;
+      margin-bottom: 20px;
+      gap: 16px;
+      flex-wrap: wrap;
+      align-items: center;
+      background: var(--ps-panel);
+      padding: 18px 24px;
+      border-radius: 40px;
+      border: 1px solid var(--ps-border);
+    }
+    #filter-bar.visible { display: flex; }
+
+    #filter-bar input, #filter-bar select {
+      background: #25252b;
+      border: 1.5px solid var(--ps-border);
+      border-radius: 30px;
+      padding: 10px 18px;
+      font-family: 'Open Sans', sans-serif;
+      color: white;
+      outline: none;
+      transition: 0.2s;
+      min-width: 180px;
+    }
+
+    #filter-bar input:focus, #filter-bar select:focus {
+      border-color: var(--ps-accent);
+    }
+
+    #result-count {
+      color: var(--ps-text-dim);
+      font-size: 0.85rem;
+      margin-left: auto;
+    }
+
+    /* table — PSN dark style */
+    .table-wrap {
+      border-radius: 20px;
+      overflow: hidden;
+      border: 1px solid var(--ps-border);
+      background: var(--ps-panel);
+      box-shadow: var(--ps-shadow);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--ps-panel);
+      font-size: 0.9rem;
+    }
+
+    thead {
+      background: #0a0a0c;
+    }
+
+    thead th {
+      padding: 16px 18px;
+      text-align: left;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.7rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--ps-text-dim);
+      cursor: pointer;
+      user-select: none;
+      white-space: nowrap;
+    }
+
+    thead th:hover { color: white; }
+
+    .sort-icon::after {
+      content: '↕';
+      margin-left: 6px;
+      opacity: 0.5;
+      font-size: 0.8rem;
+    }
+    thead th.asc .sort-icon::after { content: '↑'; opacity: 1; }
+    thead th.desc .sort-icon::after { content: '↓'; opacity: 1; }
+
+    tbody tr {
+      border-bottom: 1px solid var(--ps-border);
+      transition: background 0.15s;
+      animation: slideIn 0.25s ease both;
+    }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: #272730; }
+    @keyframes slideIn { from { opacity:0; transform: translateX(8px); } to { opacity:1; transform: none; } }
+
+    td {
+      padding: 14px 18px;
+      vertical-align: middle;
+    }
+
+    td.num-col {
+      color: var(--ps-text-dim);
+      font-family: 'Orbitron', sans-serif;
+      width: 50px;
+    }
+
+    td.title-col {
+      font-weight: 600;
+      max-width: 300px;
+    }
+
+    td.title-col a {
+      color: var(--ps-text);
+      text-decoration: none;
+    }
+    td.title-col a:hover { color: var(--ps-accent); }
+
+    td.genre-col { color: #b0b0c0; }
+    td.price-col {
+      font-family: 'Orbitron', sans-serif;
+      color: #aaffaa;
+      font-weight: 700;
+    }
+
+    .badge {
+      display: inline-block;
+      background: #2e3a4a;
+      padding: 4px 12px;
+      border-radius: 40px;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border: 1px solid transparent;
+    }
+    .badge.ps5 { background: #006fcd; color: white; border-color: #3b9eff; }
+    .badge.ps4 { background: #5f5f78; color: white; }
+
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 80px 20px;
+      color: var(--ps-text-dim);
+      text-align: center;
+      gap: 16px;
+    }
+    .empty-state .icon { font-size: 5rem; filter: grayscale(1); }
+
+    #export-bar {
+      display: none;
+      margin-top: 24px;
+      justify-content: flex-end;
+      gap: 14px;
+    }
+    #export-bar.visible { display: flex; }
+
+    .btn-export {
+      background: transparent;
+      border: 1.5px solid var(--ps-border);
+      border-radius: 40px;
+      padding: 10px 28px;
+      font-family: 'Orbitron', sans-serif;
+      color: var(--ps-text);
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .btn-export:hover {
+      background: var(--ps-accent);
+      border-color: var(--ps-accent);
+      color: black;
+      font-weight: 600;
+    }
+
+    /* hidden helper */
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <header>
+    <div class="eyebrow">playstation network // demo scraper</div>
+    <h1>game <span>catalog</span></h1>
+    <p class="subtitle">
+      <strong>PSN store simulator</strong> — scraping live from 
+      <code style="background:#333;">books.toscrape.com</code> (placeholder data).
+      Shows how a real scraper would work with PlayStation game data.
+    </p>
+  </header>
+
+  <div class="note">
+    <span class="ps-logo">PS</span>
+    <span><strong>proxy fallback system</strong> — uses <code>allorigins.win</code>, <code>corsproxy.io</code> & <code>codetabs.com</code>. 
+    The source site is a book catalogue, but we transform the listings into PlayStation games (demo mapping).</span>
+  </div>
+
+  <!-- Controls -->
+  <div class="controls">
+    <div class="field">
+      <label>Target URL (books.toscrape.com page)</label>
+      <input type="url" id="url-input" value="https://books.toscrape.com/catalogue/page-1.html" />
+    </div>
+    <div class="page-btns">
+      <button class="pg-btn active" data-page="1">1</button>
+      <button class="pg-btn" data-page="2">2</button>
+      <button class="pg-btn" data-page="3">3</button>
+      <button class="pg-btn" data-page="4">4</button>
+      <button class="pg-btn" data-page="5">5</button>
+    </div>
+    <button class="btn-scrape" id="scrape-btn" onclick="scrape()">⟳ SCRAPE GAMES</button>
+  </div>
+
+  <!-- Status bar -->
+  <div id="status-bar"></div>
+
+  <!-- Stats row (PSN style) -->
+  <div id="stats-row">
+    <div class="stat-card"><span class="num" id="stat-total">0</span><span class="lbl">Titles</span></div>
+    <div class="stat-card"><span class="num" id="stat-cheapest">—</span><span class="lbl">Lowest</span></div>
+    <div class="stat-card"><span class="num" id="stat-priciest">—</span><span class="lbl">Highest</span></div>
+    <div class="stat-card"><span class="num" id="stat-avg">—</span><span class="lbl">Average</span></div>
+    <div class="stat-card"><span class="num" id="stat-ps5">0</span><span class="lbl">PS5™ titles</span></div>
+  </div>
+
+  <!-- filter bar -->
+  <div id="filter-bar">
+    <input type="text" id="search-input" placeholder="Filter by game title…" oninput="renderTable()" />
+    <select id="platform-filter" onchange="renderTable()">
+      <option value="">All platforms</option>
+      <option value="PS5">PS5</option>
+      <option value="PS4">PS4</option>
+    </select>
+    <select id="price-filter" onchange="renderTable()">
+      <option value="">Any price</option>
+      <option value="0-20">Under £20</option>
+      <option value="20-40">£20 – £40</option>
+      <option value="40+">£40 & above</option>
+    </select>
+    <span id="result-count"></span>
+  </div>
+
+  <!-- Table area -->
+  <div class="table-wrap" id="table-wrap">
+    <div id="empty-state" class="empty-state">
+      <span class="icon">🎮</span>
+      <p>Enter a page and click SCRAPE GAMES to load PlayStation titles.</p>
+    </div>
+    <table id="games-table" style="display:none;">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th onclick="sortBy('title')" id="th-title">Title <span class="sort-icon"></span></th>
+          <th onclick="sortBy('genre')" id="th-genre">Genre <span class="sort-icon"></span></th>
+          <th onclick="sortBy('price')" id="th-price">Price <span class="sort-icon"></span></th>
+          <th onclick="sortBy('platform')" id="th-platform">Platform <span class="sort-icon"></span></th>
+        </tr>
+      </thead>
+      <tbody id="table-body"></tbody>
+    </table>
+  </div>
+
+  <!-- export -->
+  <div id="export-bar">
+    <button class="btn-export" onclick="exportCSV()">📥 CSV</button>
+    <button class="btn-export" onclick="exportJSON()">📥 JSON</button>
+  </div>
+</div>
+
+<script>
+  // ------ state ------
+  let allGames = [];
+  let sortKey = 'title';
+  let sortDir = 'asc';
+
+  const PROXIES = [
+    { name: 'corsproxy.io', buildUrl: (t)=>`https://corsproxy.io/?${encodeURIComponent(t)}`, extract: async r=>r.text() },
+    { name: 'allorigins.win', buildUrl: (t)=>`https://api.allorigins.win/get?url=${encodeURIComponent(t)}`, extract: async r=>(await r.json()).contents },
+    { name: 'codetabs.com', buildUrl: (t)=>`https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(t)}`, extract: async r=>r.text() },
+  ];
+
+  // helper: map book data -> PlayStation game (creative demo)
+  function bookToPSGame(book, index) {
+    const platforms = ['PS5', 'PS4'];
+    const genres = ['Action', 'RPG', 'Shooter', 'Sports', 'Adventure', 'Racing'];
+    // Deterministic but varied mapping based on title length & index
+    const platform = platforms[ (book.title.length + index) % 2 ];
+    const genre = genres[ (book.price * 10 + index) % genres.length ];
+    const ps5Exclusive = (platform === 'PS5' && genre === 'Action') ? 'yes' : '';
+    return {
+      title: book.title.replace(/(\w+)/g, (w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()), // fancy case
+      genre: genre,
+      price: book.price,
+      priceText: `£${book.price.toFixed(2)}`,
+      platform: platform,
+      // for filtering / stats
+      rawPrice: book.price,
+      bookUrl: book.bookUrl,
+    };
+  }
+
+  // ---- fetch with fallback ----
+  async function fetchWithFallback(targetUrl, onProgress) {
+    const errors = [];
+    for (const proxy of PROXIES) {
+      onProgress(`🔄 proxy: ${proxy.name} …`);
+      try {
+        const proxyUrl = proxy.buildUrl(targetUrl);
+        const res = await fetch(proxyUrl, { signal: AbortSignal.timeout(10000) });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const html = await proxy.extract(res);
+        if (!html || html.length < 200) throw new Error('too short');
+        return html;
+      } catch (err) {
+        errors.push(`${proxy.name}: ${err.message}`);
+      }
+    }
+    throw new Error(`All proxies dead:\n${errors.join('\n')}`);
+  }
+
+  // scrape entry
+  async function scrape() {
+    const url = document.getElementById('url-input').value.trim();
+    if (!url) return setStatus('error', '⚠️ need URL');
+    if (!url.includes('books.toscrape.com')) 
+      return setStatus('error', '⚠️ only books.toscrape.com allowed');
+
+    setStatus('loading', 'initializing…');
+    document.getElementById('scrape-btn').disabled = true;
+
+    try {
+      const html = await fetchWithFallback(url, (msg) => setStatus('loading', msg));
+      setStatus('loading', 'parsing game data…');
+
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, 'text/html');
+      const articles = doc.querySelectorAll('article.product_pod');
+
+      if (articles.length === 0) throw new Error('no products found');
+
+      // extract books then transform to PS games
+      const rawBooks = Array.from(articles).map(article => {
+        const anchor = article.querySelector('h3 a');
+        const title = anchor?.getAttribute('title') || anchor?.textContent?.trim() || 'unknown';
+        const relHref = anchor?.getAttribute('href') || '';
+        const bookUrl = new URL(relHref, url).href;
+        const priceText = article.querySelector('.price_color')?.textContent?.trim() || '£0.00';
+        const price = parseFloat(priceText.replace(/[^0-9.]/g, '')) || 0;
+        return { title, price, bookUrl };
+      });
+
+      allGames = rawBooks.map((b, idx) => bookToPSGame(b, idx));
+
+      // stats
+      const prices = allGames.map(g => g.rawPrice);
+      const minP = Math.min(...prices).toFixed(2);
+      const maxP = Math.max(...prices).toFixed(2);
+      const avgP = (prices.reduce((a,b)=>a+b,0)/prices.length).toFixed(2);
+      const ps5count = allGames.filter(g => g.platform === 'PS5').length;
+
+      document.getElementById('stat-total').textContent = allGames.length;
+      document.getElementById('stat-cheapest').textContent = `£${minP}`;
+      document.getElementById('stat-priciest').textContent = `£${maxP}`;
+      document.getElementById('stat-avg').textContent = `£${avgP}`;
+      document.getElementById('stat-ps5').textContent = ps5count;
+
+      document.getElementById('stats-row').classList.add('visible');
+      document.getElementById('filter-bar').classList.add('visible');
+      document.getElementById('export-bar').classList.add('visible');
+
+      // reset filters
+      document.getElementById('search-input').value = '';
+      document.getElementById('platform-filter').value = '';
+      document.getElementById('price-filter').value = '';
+
+      sortKey = 'title'; sortDir = 'asc';
+      updateSortHeaders();
+      renderTable();
+
+      setStatus('done', `✅ ${allGames.length} PlayStation games loaded (demo data from book page ${url})`);
+    } catch (err) {
+      setStatus('error', `❌ ${err.message}`);
+      console.error(err);
+    } finally {
+      document.getElementById('scrape-btn').disabled = false;
+    }
+  }
+
+  // render with filters & sort
+  function renderTable() {
+    const search = document.getElementById('search-input').value.toLowerCase();
+    const platformVal = document.getElementById('platform-filter').value;
+    const priceRange = document.getElementById('price-filter').value;
+
+    let filtered = allGames.filter(g => {
+      if (search && !g.title.toLowerCase().includes(search)) return false;
+      if (platformVal && g.platform !== platformVal) return false;
+      if (priceRange) {
+        if (priceRange === '0-20' && g.rawPrice >= 20) return false;
+        if (priceRange === '20-40' && (g.rawPrice < 20 || g.rawPrice > 40)) return false;
+        if (priceRange === '40+' && g.rawPrice <= 40) return false;
+      }
+      return true;
+    });
+
+    // sort
+    filtered = [...filtered].sort((a,b) => {
+      let av = a[sortKey], bv = b[sortKey];
+      if (typeof av === 'string') av = av.toLowerCase();
+      if (typeof bv === 'string') bv = bv.toLowerCase();
+      if (av < bv) return sortDir === 'asc' ? -1 : 1;
+      if (av > bv) return sortDir === 'asc' ? 1 : -1;
+      return 0;
+    });
+
+    document.getElementById('result-count').textContent = `${filtered.length} of ${allGames.length} games`;
+
+    const tbody = document.getElementById('table-body');
+    const table = document.getElementById('games-table');
+    const emptyDiv = document.getElementById('empty-state');
+
+    if (filtered.length === 0 && allGames.length > 0) {
+      tbody.innerHTML = '';
+      table.style.display = 'none';
+      emptyDiv.style.display = 'flex';
+      emptyDiv.querySelector('.icon').textContent = '🕹️';
+      emptyDiv.querySelector('p').textContent = 'No games match those filters.';
+      return;
+    }
+
+    tbody.innerHTML = filtered.map((g, i) => {
+      const delay = Math.min(i * 25, 300);
+      const badgeClass = g.platform === 'PS5' ? 'badge ps5' : 'badge ps4';
+      return `<tr style="animation-delay:${delay}ms">
+        <td class="num-col">${i+1}</td>
+        <td class="title-col"><a href="${g.bookUrl}" target="_blank">${escapeHtml(g.title)}</a></td>
+        <td class="genre-col">${escapeHtml(g.genre)}</td>
+        <td class="price-col">${escapeHtml(g.priceText)}</td>
+        <td><span class="${badgeClass}">${g.platform}</span></td>
+      </tr>`;
+    }).join('');
+
+    table.style.display = 'table';
+    emptyDiv.style.display = 'none';
+  }
+
+  function sortBy(key) {
+    if (sortKey === key) sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+    else { sortKey = key; sortDir = 'asc'; }
+    updateSortHeaders();
+    renderTable();
+  }
+
+  function updateSortHeaders() {
+    ['title','genre','price','platform'].forEach(k => {
+      const th = document.getElementById(`th-${k}`);
+      if (th) th.className = (k === sortKey) ? sortDir : '';
+    });
+  }
+
+  function setStatus(type, msg) {
+    const bar = document.getElementById('status-bar');
+    bar.className = type;
+    bar.innerHTML = type==='loading' ? `<span class="spinner"></span>${msg}` : msg;
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"]/g, function(m) {
+      return m === '&' ? '&amp;' : m === '<' ? '&lt;' : m === '>' ? '&gt;' : '&quot;';
+    });
+  }
+
+  // exports
+  function exportCSV() {
+    const header = ['Title','Genre','Price','Platform','URL'];
+    const rows = allGames.map(g => [
+      `"${g.title.replace(/"/g,'""')}"`,
+      `"${g.genre}"`,
+      g.priceText,
+      g.platform,
+      g.bookUrl
+    ].join(','));
+    const csv = [header.join(','), ...rows].join('\n');
+    download(csv, 'ps_games.csv', 'text/csv');
+  }
+
+  function exportJSON() {
+    const data = allGames.map(g => ({ title: g.title, genre: g.genre, price: g.priceText, platform: g.platform, url: g.bookUrl }));
+    download(JSON.stringify(data, null, 2), 'ps_games.json', 'application/json');
+  }
+
+  function download(text, filename, type) {
+    const blob = new Blob([text], { type });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
+  // quick page buttons
+  document.querySelectorAll('.pg-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      document.querySelectorAll('.pg-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const p = btn.dataset.page;
+      document.getElementById('url-input').value = `https://books.toscrape.com/catalogue/page-${p}.html`;
+      scrape();
+    });
+  });
+
+  // initial load
+  window.addEventListener('load', () => scrape());
+</script>
+</body>
+</html>
