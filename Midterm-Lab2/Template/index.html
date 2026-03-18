@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GeeksforGeeks Academic Scraper - Data Science</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📚 GeeksforGeeks Academic Scraper</h1>
+            <p class="subtitle">Data Science Learning Material Generator</p>
+        </header>
+
+        <div class="dashboard">
+            <div class="control-panel">
+                <h2>Scraper Controls</h2>
+                <div class="stats">
+                    <div class="stat-card">
+                        <span class="stat-label">Topics Found</span>
+                        <span class="stat-value" id="topicCount">0</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">Last Updated</span>
+                        <span class="stat-value" id="lastUpdated">Never</span>
+                    </div>
+                </div>
+                
+                <div class="button-group">
+                    <button id="scrapeBtn" class="btn primary">🚀 Start Scraping</button>
+                    <button id="previewBtn" class="btn secondary" disabled>👁️ Preview Data</button>
+                    <button id="generatePdfBtn" class="btn success" disabled>📄 Generate PDF</button>
+                </div>
+
+                <div class="progress-container" id="progressContainer" style="display: none;">
+                    <div class="progress-bar" id="progressBar"></div>
+                    <span class="progress-text" id="progressText">0%</span>
+                </div>
+            </div>
+
+            <div class="topics-preview">
+                <h2>Scraped Topics Preview</h2>
+                <div class="table-container">
+                    <table id="topicsTable">
+                        <thead>
+                            <tr>
+                                <th>Topic Title</th>
+                                <th>Difficulty</th>
+                                <th>Key Concepts</th>
+                                <th>Code Available</th>
+                                <th>Complexity</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            <tr>
+                                <td colspan="5" class="no-data">No data available. Start scraping to fetch topics.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal" id="previewModal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Detailed Topic Preview</h2>
+                <div id="modalBody"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="scraper.js"></script>
+</body>
+</html>
